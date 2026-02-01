@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#faf8ef">
+    <title>2048 - 游戏中</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="game-style.css">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <style>
+/* ==================== 暖色系（小数字） ==================== */
+/* 2: 米黄色 🟡 */
+.tile-2 { 
+    background: linear-gradient(135deg, #FFF8DC 0%, #FAEBD7 100%) !important; 
+    color: #8B7355 !important;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8) !important;
+    box-shadow: 0 4px 8px rgba(255, 248, 220, 0.5) !important;
+}
+
+/* 4: 桃色 🍑 */
+.tile-4 { 
+    background: linear-gradient(135deg, #FFDAB9 0%, #FFC0CB 100%) !important; 
+    color: #8B5A2B !important;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8) !important;
+    box-shadow: 0 4px 8px rgba(255, 218, 185, 0.5) !important;
+}
+
+/* 8: 橙黄色 🟠 */
+.tile-8 { 
+    background: linear-gradient(135deg, #FFA500 0%, #FF8C00 100%) !important; 
+    color: white !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5) !important;
+    box-shadow: 0 4px 10px rgba(255, 165, 0, 0.6) !important;
+    font-size: min(5.8vw, 30px) !important;
+}
+
+/* 16: 橙红色 🔴 */
+.tile-16 { 
+    background: linear-gradient(135deg, #FF4500 0%, #FF6347 100%) !important; 
+    color: white !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5) !important;
+    box-shadow: 0 4px 10px rgba(255, 69, 0, 0.6) !important;
+    font-size: min(5.8vw, 30px) !important;
+}
+
+/* 32: 红色 🔥 */
+.tile-32 { 
+    background: linear-gradient(135deg, #DC143C 0%, #B22222 100%) !important; 
+    color: white !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6) !important;
+    box-shadow: 0 4px 12px rgba(220, 20, 60, 0.7) !important;
+    font-size: min(5.8vw, 30px) !important;
+}
+
+/* 64: 深红色 🩸 */
+.tile-64 { 
+    background: linear-gradient(135deg, #8B0000 0%, #660000 100%) !important; 
+    color: white !important;
+    text-shadow: 0 1px 3px rgba(255, 255, 255, 0.5) !important;
+    box-shadow: 0 4px 12px rgba(139, 0, 0, 0.7) !important;
+    font-size: min(5.8vw, 30px) !important;
+}
+
+/* ==================== 金色系（中等数字） ==================== */
+/* 128: 金色 🥇 */
+.tile-128 { 
+    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%) !important; 
+    color: white !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5) !important;
+    box-shadow: 0 5px 15px rgba(255, 215, 0, 0.6) !important;
+    font-size: min(5vw, 26px) !important;
+}
+
+/* 256: 亮橙色 🟧 */
+.tile-256 { 
+    background: linear-gradient(135deg, #FF8C00 0%, #FF4500 100%) !important; 
+    color: white !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5) !important;
+    box-shadow: 0 5px 15px rgba(255, 140, 0, 0.6) !important;
+    font-size: min(5vw, 26px) !important;
+}
+
+/* 512: 珊瑚色 🪸 */
+.tile-512 { 
+    background: linear-gradient(135deg, #FF7F50 0%, #FF6347 100%) !important; 
+    color: white !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5) !important;
+    box-shadow: 0 5px 15px rgba(255, 127, 80, 0.6) !important;
+    font-size: min(5vw, 26px) !important;
+}
+
+/* ==================== 冷色系（大数字） ==================== */
+/* 1024: 紫色 🟣 */
+.tile-1024 { 
+    background: linear-gradient(135deg, #9370DB 0%, #8A2BE2 100%) !important; 
+    color: white !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5) !important;
+    box-shadow: 0 6px 18px rgba(147, 112, 219, 0.7) !important;
+    font-size: min(4.2vw, 22px) !important;
+}
+
+/* 2048: 靛蓝色 🔵 */
+.tile-2048 { 
+    background: linear-gradient(135deg, #4B0082 0%, #483D8B 100%) !important; 
+    color: white !important;
+    text-shadow: 0 1px 3px rgba(255, 255, 255, 0.5) !important;
+    box-shadow: 0 6px 18px rgba(75, 0, 130, 0.7) !important;
+    font-size: min(4.2vw, 22px) !important;
+    animation: glow 2s ease-in-out infinite alternate !important;
+}
+
+/* 4096: 青色 🩵 */
+.tile-4096 { 
+    background: linear-gradient(135deg, #00CED1 0%, #20B2AA 100%) !important; 
+    color: white !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5) !important;
+    box-shadow: 0 6px 20px rgba(0, 206, 209, 0.7) !important;
+    font-size: min(3.8vw, 20px) !important;
+    animation: pulse 2s ease-in-out infinite !important;
+}
+
+/* 8192: 青绿色 💎 */
+.tile-8192 { 
+    background: linear-gradient(135deg, #40E0D0 0%, #48D1CC 100%) !important; 
+    color: white !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5) !important;
+    box-shadow: 0 6px 20px rgba(64, 224, 208, 0.7) !important;
+    font-size: min(3.8vw, 20px) !important;
+    animation: pulse 1.5s ease-in-out infinite !important;
+}
+
+/* ==================== 绿色系（超大数字） ==================== */
+/* 16384: 亮绿色 💚 */
+.tile-16384 { 
+    background: linear-gradient(135deg, #32CD32 0%, #228B22 100%) !important; 
+    color: white !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5) !important;
+    box-shadow: 0 7px 22px rgba(50, 205, 50, 0.8) !important;
+    font-size: min(3.5vw, 18px) !important;
+    animation: glow 1.2s ease-in-out infinite alternate !important;
+}
+
+/* 32768: 深绿色 🌲 */
+.tile-32768 { 
+    background: linear-gradient(135deg, #006400 0%, #2E8B57 100%) !important; 
+    color: white !important;
+    text-shadow: 0 1px 3px rgba(255, 255, 255, 0.5) !important;
+    box-shadow: 0 7px 22px rgba(0, 100, 0, 0.8) !important;
+    font-size: min(3.5vw, 18px) !important;
+    animation: glow 1s ease-in-out infinite alternate !important;
+}
+
+/* ==================== 极限数字优化版 ==================== */
+/* 65536: 粉色 💖 */
+.tile-65536 { 
+    background: linear-gradient(135deg, #FF69B4 0%, #FF1493 100%) !important; 
+    color: white !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6) !important;
+    box-shadow: 0 6px 20px rgba(255, 105, 180, 0.8) !important;
+    font-size: min(3.5vw, 18px) !important;  /* 增大字体 */
+    font-weight: 900 !important;
+    letter-spacing: -0.5px !important;
+    animation: pulse 0.8s ease-in-out infinite !important;
+    line-height: 1 !important;
+    padding: 5px !important;
+}
+
+/* 131072: 深紫色 🟪 - 特殊处理 */
+.tile-131072 { 
+    background: linear-gradient(135deg, #9400D3 0%, #4B0082 100%) !important; 
+    color: white !important;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.7) !important;
+    box-shadow: 0 6px 20px rgba(148, 0, 211, 0.8) !important;
+    font-size: min(3.2vw, 16px) !important;  /* 增大字体 */
+    font-weight: 900 !important;
+    letter-spacing: -0.8px !important;
+    animation: subtle-glow 0.7s ease-in-out infinite alternate !important;
+    line-height: 0.9 !important;
+    padding: 4px !important;
+}
+
+/* 262144: 深蓝色 🌌 */
+.tile-262144 { 
+    background: linear-gradient(135deg, #000080 0%, #191970 100%) !important; 
+    color: white !important;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.7) !important;
+    box-shadow: 0 6px 20px rgba(0, 0, 128, 0.8) !important;
+    font-size: min(3vw, 15px) !important;  /* 增大字体 */
+    font-weight: 900 !important;
+    letter-spacing: -1px !important;
+    animation: pulse 0.6s ease-in-out infinite !important;
+    line-height: 0.9 !important;
+    padding: 4px !important;
+}
+
+/* ==================== 支持更多超大数字 ==================== */
+.tile-524288 {
+    background: linear-gradient(135deg, #800000 0%, #400000 100%) !important;
+    color: white !important;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.7) !important;
+    font-size: min(2.8vw, 14px) !important;  /* 增大字体 */
+    font-weight: 900 !important;
+    letter-spacing: -1.2px !important;
+    box-shadow: 0 5px 18px rgba(128, 0, 0, 0.8) !important;
+    line-height: 0.85 !important;
+    padding: 3px !important;
+}
+
+.tile-1048576 {
+    background: linear-gradient(135deg, #000000 0%, #333333 100%) !important;
+    color: gold !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8) !important;
+    font-size: min(2.6vw, 13px) !important;  /* 增大字体 */
+    font-weight: 900 !important;
+    letter-spacing: -1.5px !important;
+    box-shadow: 0 5px 18px rgba(0, 0, 0, 0.9) !important;
+    animation: subtle-pulse 0.4s ease-in-out infinite !important;
+    line-height: 0.8 !important;
+    padding: 3px !important;
+}
+
+/* ==================== 新增：超特大数字支持 ==================== */
+.tile-2097152 {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%) !important;
+    color: #f1c40f !important;
+    font-size: min(2.4vw, 12px) !important;
+    font-weight: 900 !important;
+    letter-spacing: -1.8px !important;
+    line-height: 0.75 !important;
+    padding: 2px !important;
+}
+
+.tile-4194304 {
+    background: linear-gradient(135deg, #16a085 0%, #1abc9c 100%) !important;
+    color: white !important;
+    font-size: min(2.2vw, 11px) !important;
+    font-weight: 900 !important;
+    letter-spacing: -2px !important;
+    line-height: 0.7 !important;
+    padding: 2px !important;
+}
+
+/* ==================== 响应式优化 ==================== */
+
+/* 小屏幕设备（手机） */
+@media (max-width: 375px) {
+    /* 针对iPhone SE/小屏手机优化 */
+    .tile-65536 { font-size: min(4vw, 16px) !important; }
+    .tile-131072 { font-size: min(3.8vw, 15px) !important; }
+    .tile-262144 { font-size: min(3.6vw, 14px) !important; }
+    .tile-524288 { font-size: min(3.4vw, 13px) !important; }
+    .tile-1048576 { font-size: min(3.2vw, 12px) !important; }
+    .tile-2097152 { font-size: min(3vw, 11px) !important; }
+    .tile-4194304 { font-size: min(2.8vw, 10px) !important; }
+}
+
+/* 超小屏幕设备 */
+@media (max-width: 320px) {
+    /* 针对iPhone 5/超小屏优化 */
+    .tile-65536 { font-size: min(4.5vw, 14px) !important; }
+    .tile-131072 { font-size: min(4.2vw, 13px) !important; }
+    .tile-262144 { font-size: min(4vw, 12px) !important; }
+    .tile-524288 { font-size: min(3.8vw, 11px) !important; }
+    .tile-1048576 { font-size: min(3.6vw, 10px) !important; }
+    .tile-2097152 { font-size: min(3.4vw, 9px) !important; }
+    .tile-4194304 { font-size: min(3.2vw, 8px) !important; }
+    
+    /* 极限数字使用缩写 */
+    .tile-131072 .tile-inner::after {
+        content: '131K';
+        font-size: 0.9em;
+    }
+    .tile-131072 .tile-inner {
+        font-size: 0 !important;
+        visibility: hidden;
+    }
+}
+
+/* 中等屏幕设备（平板竖屏） */
+@media (min-width: 768px) and (max-width: 1024px) {
+    .tile-65536 { font-size: min(2.8vw, 22px) !important; }
+    .tile-131072 { font-size: min(2.6vw, 20px) !important; }
+    .tile-262144 { font-size: min(2.4vw, 18px) !important; }
+    .tile-524288 { font-size: min(2.2vw, 16px) !important; }
+    .tile-1048576 { font-size: min(2vw, 14px) !important; }
+    .tile-2097152 { font-size: min(1.8vw, 12px) !important; }
+    .tile-4194304 { font-size: min(1.6vw, 10px) !important; }
+}
+
+/* 大屏幕设备（桌面、平板横屏） */
+@media (min-width: 1025px) {
+    .tile-65536 { font-size: min(2.2vw, 24px) !important; }
+    .tile-131072 { font-size: min(2vw, 22px) !important; }
+    .tile-262144 { font-size: min(1.8vw, 20px) !important; }
+    .tile-524288 { font-size: min(1.6vw, 18px) !important; }
+    .tile-1048576 { font-size: min(1.4vw, 16px) !important; }
+    .tile-2097152 { font-size: min(1.2vw, 14px) !important; }
+    .tile-4194304 { font-size: min(1vw, 12px) !important; }
+}
+
+/* 折叠屏等特殊比例 */
+@media (max-aspect-ratio: 3/4) {
+    /* 针对折叠屏或特殊长宽比 */
+    .tile-65536 { font-size: min(3vw, 14px) !important; }
+    .tile-131072 { font-size: min(2.8vw, 13px) !important; }
+    .tile-262144 { font-size: min(2.6vw, 12px) !important; }
+    .tile-524288 { font-size: min(2.4vw, 11px) !important; }
+    .tile-1048576 { font-size: min(2.2vw, 10px) !important; }
+    
+    /* 使用更紧凑的布局 */
+    .tile-large {
+        padding: 1px !important;
+        margin: 0 !important;
+    }
+}
+
+/* 高DPI屏幕优化 */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .tile-65536,
+    .tile-131072,
+    .tile-262144,
+    .tile-524288,
+    .tile-1048576 {
+        text-shadow: 0 1px 1px rgba(0, 0, 0, 0.7) !important;
+        -webkit-font-smoothing: antialiased !important;
+        -moz-osx-font-smoothing: grayscale !important;
+    }
+}
+
+/* ==================== 新增动画效果 ==================== */
+@keyframes subtle-glow {
+    0% {
+        box-shadow: 0 0 15px rgba(148, 0, 211, 0.6);
+        opacity: 0.95;
+    }
+    100% {
+        box-shadow: 0 0 25px rgba(148, 0, 211, 0.8);
+        opacity: 1;
+    }
+}
+
+@keyframes subtle-pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.02);
+    }
+}
+
+/* ==================== 数字缩写显示（可选功能） ==================== */
+/* 在大数字上显示缩写 */
+.tile-abbreviation {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 0.7em;
+    opacity: 0.9;
+    display: none;
+}
+
+/* 当数字过大时显示缩写 */
+.tile-131072.show-abbreviation .tile-inner,
+.tile-262144.show-abbreviation .tile-inner,
+.tile-524288.show-abbreviation .tile-inner,
+.tile-1048576.show-abbreviation .tile-inner {
+    display: none;
+}
+
+.tile-131072.show-abbreviation::after {
+    content: '131K';
+}
+.tile-262144.show-abbreviation::after {
+    content: '262K';
+}
+.tile-524288.show-abbreviation::after {
+    content: '524K';
+}
+.tile-1048576.show-abbreviation::after {
+    content: '1M';
+}
+.tile-2097152.show-abbreviation::after {
+    content: '2M';
+}
+.tile-4194304.show-abbreviation::after {
+    content: '4M';
+}
+
+/* ==================== 辅助类 ==================== */
+.tile-large {
+    font-weight: 900 !important;
+    letter-spacing: -1px !important;
+    /* 强制换行处理长数字 */
+    word-wrap: break-word !important;
+    word-break: break-all !important;
+    overflow-wrap: break-word !important;
+}
+
+/* 超大数字容器优化 */
+.cell .tile-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* 确保单元格能容纳特大数字 */
+.cell {
+    position: relative;
+    overflow: hidden !important;
+}
+</style>
+</head>
+<body class="game-page">
+    <!-- 游戏主容器 -->
+    <div id="game-container" class="game-container">
+        <!-- 游戏头部 -->
+        <header class="game-header-bar">
+            <div class="header-left">
+                <button id="back-to-menu" class="back-button" aria-label="返回主菜单">
+                    <svg class="back-icon" viewBox="0 0 24 24">
+                        <path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"/>
+                    </svg>
+                    <span class="back-text">菜单</span>
+                </button>
+            </div>
+            
+            <div class="header-center">
+                <h1 class="game-title-small">2048</h1>
+            </div>
+            
+            <div class="header-right">
+                <button id="fullscreen-btn" class="icon-button" aria-label="全屏">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- 分数和撤销信息 -->
+        <div class="game-info-panel">
+            <div class="score-panel">
+                <div class="score-box current-score">
+                    <div class="score-label">分数</div>
+                    <div class="score-value" id="score">0</div>
+                </div>
+                
+                <div class="score-box best-score">
+                    <div class="score-label">最高分</div>
+                    <div class="score-value" id="best">0</div>
+                </div>
+                
+                <div class="score-box undo-box">
+                    <div class="score-label">撤销</div>
+                    <div class="score-value" id="undo-count">3</div>
+                    <div class="score-subtext">剩余次数</div>
+                </div>
+            </div>
+            
+            <div class="undo-chances-info">
+                <div class="undo-progress">
+                    <div class="undo-label">撤销机会:</div>
+                    <div class="undo-dots">
+                        <span class="undo-dot active" data-index="1"></span>
+                        <span class="undo-dot active" data-index="2"></span>
+                        <span class="undo-dot active" data-index="3"></span>
+                    </div>
+                </div>
+                <div id="top-score" class="top-score-display">当前分数: <span>0</span></div>
+            </div>
+        </div>
+
+        <!-- 游戏消息区域 -->
+        <div id="message" class="game-message"></div>
+
+        <!-- 游戏网格容器 -->
+        <main class="game-main">
+            <div class="grid-container">
+                <div id="grid" class="game-grid">
+                    <!-- 这里将由JavaScript动态生成16宫格 -->
+                </div>
+                
+                <!-- 触摸提示（仅移动设备显示） -->
+                <div class="touch-hints">
+                    <div class="touch-hint-row">
+                        <div class="touch-hint">
+                            <svg class="touch-arrow" viewBox="0 0 24 24">
+                                <path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/>
+                            </svg>
+                            <span class="hint-text">上滑</span>
+                        </div>
+                    </div>
+                    <div class="touch-hint-row">
+                        <div class="touch-hint">
+                            <svg class="touch-arrow" viewBox="0 0 24 24">
+                                <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/>
+                            </svg>
+                            <span class="hint-text">下滑</span>
+                        </div>
+                        <div class="grid-center-hint">
+                            <div class="hint-circle">滑动<br>控制</div>
+                        </div>
+                        <div class="touch-hint">
+                            <svg class="touch-arrow" viewBox="0 0 24 24">
+                                <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+                            </svg>
+                            <span class="hint-text">左滑</span>
+                        </div>
+                        <div class="touch-hint">
+                            <svg class="touch-arrow" viewBox="0 0 24 24">
+                                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                            </svg>
+                            <span class="hint-text">右滑</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- 游戏控制按钮 -->
+        <div class="game-controls">
+            <button id="undo" class="control-button undo-button">
+                <svg class="button-icon" viewBox="0 0 24 24">
+                    <path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/>
+                </svg>
+                <span class="button-text">撤销</span>
+                <span class="button-badge" id="undo-chances">3</span>
+            </button>
+            
+            <button id="restart" class="control-button restart-button">
+                <svg class="button-icon" viewBox="0 0 24 24">
+                    <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+                </svg>
+                <span class="button-text">重新开始</span>
+            </button>
+            
+            <button id="hint" class="control-button hint-button" aria-label="提示">
+                <svg class="button-icon" viewBox="0 0 24 24">
+                    <path d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"/>
+                </svg>
+                <span class="button-text">提示</span>
+            </button>
+        </div>
+
+        <!-- 游戏状态和提示 -->
+        <div class="game-status">
+            <div class="status-indicators">
+                <div class="status-item" id="undo-warning-container">
+                    <span class="status-icon">⚠️</span>
+                    <span class="status-text">撤销剩余: <span id="undo-warning">3</span>次</span>
+                </div>
+                <div class="status-item" id="game-mode-display">
+                    <span class="status-icon">🎮</span>
+                    <span class="status-text">游戏模式: 经典</span>
+                </div>
+            </div>
+            
+            <div class="game-tips">
+                <div class="tip-card">
+                    <h3 class="tip-title">💡 游戏技巧</h3>
+                    <ul class="tip-list">
+                        <li>将最大的方块固定在角落</li>
+                        <li>保持一行填满，不要轻易打乱</li>
+                        <li>优先横向移动，再纵向移动</li>
+                        <li>合理使用3次撤销机会</li>
+                    </ul>
+                </div>
+                
+                <div class="keyboard-hint">
+                    <h4>键盘快捷键:</h4>
+                    <div class="key-shortcuts">
+                        <div class="key-group">
+                            <kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd>
+                            <span>移动方块</span>
+                        </div>
+                        <div class="key-group">
+                            <kbd>Ctrl</kbd> + <kbd>U</kbd>
+                            <span>撤销移动</span>
+                        </div>
+                        <div class="key-group">
+                            <kbd>R</kbd>
+                            <span>重新开始</span>
+                        </div>
+                        <div class="key-group">
+                            <kbd>ESC</kbd>
+                            <span>返回菜单</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 胜利/失败弹窗 -->
+        <div id="game-overlay" class="game-overlay" style="display: none;">
+            <div class="overlay-content">
+                <div id="game-result" class="game-result">
+                    <h2 id="result-title" class="result-title"></h2>
+                    <div id="result-score" class="result-score"></div>
+                    <div id="result-message" class="result-message"></div>
+                    
+                    <div class="result-actions">
+                        <button id="continue-playing" class="result-button continue-button">
+                            🎮 继续游戏
+                        </button>
+                        <button id="new-game-result" class="result-button newgame-button">
+                            🔄 新游戏
+                        </button>
+                        <button id="back-to-menu-result" class="result-button menu-button">
+                            🏠 主菜单
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部信息 -->
+        <footer class="game-footer">
+            <div class="footer-info">
+                <div class="game-stats">
+                    <span class="stat-item">游戏次数: <span id="total-games-footer">0</span></span>
+                    <span class="stat-item">胜利次数: <span id="total-wins-footer">0</span></span>
+                </div>
+                <div class="game-mode-info">
+                    <span class="mode-indicator">📱 PWA模式</span>
+                    <span class="auto-save-indicator">💾 自动保存</span>
+                </div>
+            </div>
+            <p class="footer-note">支持离线游玩 • 自动存档 • 支持触摸控制</p>
+        </footer>
+    </div>
+
+    <!-- PWA安装提示 -->
+    <div id="pwa-install-prompt" class="pwa-prompt" style="display: none;">
+        <div class="pwa-prompt-content">
+            <div class="pwa-icon">📱</div>
+            <h3 class="pwa-title">添加到主屏幕</h3>
+            <p class="pwa-text">将2048添加到主屏幕，获得更好的游戏体验和离线游玩功能</p>
+            <div class="pwa-instructions">
+                <p><strong>iOS:</strong> 点击分享按钮 → "添加到主屏幕"</p>
+                <p><strong>Android:</strong> 点击菜单按钮 → "添加到主屏幕"</p>
+            </div>
+            <div class="pwa-buttons">
+                <button id="pwa-install-btn" class="pwa-button install-button">立即添加</button>
+                <button id="pwa-dismiss-btn" class="pwa-button dismiss-button">稍后再说</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 脚本 -->
+    <script src="game.js"></script>
+    
+    <!-- 网格生成和内联脚本 -->
+    <script>
+        // 在DOM加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🎮 2048游戏页面加载');
+            
+            // 生成游戏网格
+            generateGameGrid();
+            
+            // 检测是否为iOS设备
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            
+            if (isIOS) {
+                document.body.classList.add('ios-device');
+            }
+            
+            // 初始化按钮事件
+            initGameButtons();
+            
+            // 检查URL参数
+            checkUrlParams();
+            
+            // 初始化游戏（调用game.js中的initGame）
+            if (typeof initGame === 'function') {
+                // 延迟初始化，确保DOM完全加载
+                setTimeout(initGame, 100);
+            }
+        });
+        
+        // 生成游戏网格函数
+        function generateGameGrid() {
+            const gridElement = document.getElementById('grid');
+            if (!gridElement) {
+                console.error('找不到网格元素 #grid');
+                return;
+            }
+            
+            // 清空现有内容
+            gridElement.innerHTML = '';
+            
+            // 创建4x4网格（16宫格）
+            for (let row = 0; row < 4; row++) {
+                for (let col = 0; col < 4; col++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.dataset.row = row;
+                    cell.dataset.col = col;
+                    cell.id = `cell-${row}-${col}`;
+                    gridElement.appendChild(cell);
+                }
+            }
+            
+            console.log('✅ 16宫格创建完成：4行×4列');
+        }
+        
+        // 初始化游戏按钮事件
+        function initGameButtons() {
+            // 返回主菜单按钮
+            const backButton = document.getElementById('back-to-menu');
+            if (backButton) {
+                backButton.addEventListener('click', function() {
+                    // 自动保存当前进度
+                    if (typeof saveGameState === 'function') {
+                        saveGameState();
+                    }
+                    
+                    if (confirm('返回主菜单？当前游戏进度已自动保存。')) {
+                        window.location.href = 'index.html';
+                    }
+                });
+            }
+            
+            // 重新开始按钮
+            const restartButton = document.getElementById('restart');
+            if (restartButton) {
+                restartButton.addEventListener('click', function() {
+                    if (confirm('确定要重新开始吗？当前进度将丢失。')) {
+                        // 清除存档
+                        localStorage.removeItem('2048-current-game');
+                        
+                        // 重新初始化游戏
+                        if (typeof initGame === 'function') {
+                            initGame();
+                        }
+                    }
+                });
+            }
+            
+            // 撤销按钮
+            const undoButton = document.getElementById('undo');
+            if (undoButton) {
+                undoButton.addEventListener('click', function() {
+                    if (typeof undo === 'function') {
+                        undo();
+                    }
+                });
+            }
+            
+            // 提示按钮
+            const hintButton = document.getElementById('hint');
+            if (hintButton) {
+                hintButton.addEventListener('click', function() {
+                    const hints = [
+                        '💡 尝试将最大的方块固定在角落！',
+                        '🎯 保持一行填满，避免打乱布局！',
+                        '🔄 合理使用3次撤销机会！',
+                        '⚡ 优先横向移动，再纵向移动！'
+                    ];
+                    const randomHint = hints[Math.floor(Math.random() * hints.length)];
+                    
+                    const messageElement = document.getElementById('message');
+                    if (messageElement) {
+                        messageElement.textContent = randomHint;
+                        messageElement.className = 'game-message hint';
+                        
+                        setTimeout(() => {
+                            messageElement.textContent = '';
+                            messageElement.className = 'game-message';
+                        }, 3000);
+                    }
+                });
+            }
+            
+            // 全屏按钮
+            const fullscreenBtn = document.getElementById('fullscreen-btn');
+            if (fullscreenBtn) {
+                fullscreenBtn.addEventListener('click', function() {
+                    if (!document.fullscreenElement) {
+                        document.documentElement.requestFullscreen().catch(err => {
+                            console.log('全屏请求失败:', err);
+                        });
+                    } else {
+                        document.exitFullscreen();
+                    }
+                });
+            }
+            
+            // 游戏结果按钮
+            const continuePlayingBtn = document.getElementById('continue-playing');
+            const newGameResultBtn = document.getElementById('new-game-result');
+            const backToMenuResultBtn = document.getElementById('back-to-menu-result');
+            
+            if (continuePlayingBtn) {
+                continuePlayingBtn.addEventListener('click', function() {
+                    document.getElementById('game-overlay').style.display = 'none';
+                });
+            }
+            
+            if (newGameResultBtn) {
+                newGameResultBtn.addEventListener('click', function() {
+                    document.getElementById('game-overlay').style.display = 'none';
+                    localStorage.removeItem('2048-current-game');
+                    if (typeof initGame === 'function') {
+                        initGame();
+                    }
+                });
+            }
+            
+            if (backToMenuResultBtn) {
+                backToMenuResultBtn.addEventListener('click', function() {
+                    window.location.href = 'index.html';
+                });
+            }
+        }
+        
+        // 检查URL参数
+        function checkUrlParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const mode = urlParams.get('mode');
+            
+            if (mode === 'continue') {
+                console.log('🔄 继续游戏模式');
+                // 这里可以添加继续游戏的特定逻辑
+            }
+        }
+        
+        // 防止iOS下拉刷新
+        // ==================== 优化触摸控制（替换第327-347行） ====================
+
+// iOS触摸优化 - 智能防误触
+let touchStartY = 0;
+let isTouchInGrid = false;
+
+// 1. 触摸开始检测
+document.addEventListener('touchstart', function(e) {
+    const target = e.target;
+    
+    // 检查是否在游戏网格内
+    isTouchInGrid = !!target.closest('.game-grid');
+    
+    if (isTouchInGrid) {
+        // 记录触摸起始位置
+        touchStartY = e.touches[0].clientY;
+        
+        // 轻微震动反馈（可选）
+        if (navigator.vibrate) {
+            navigator.vibrate(5);
+        }
+    }
+}, { passive: true });
+
+// 2. 触摸移动处理 - 智能阻止下拉刷新
+document.addEventListener('touchmove', function(e) {
+    if (isTouchInGrid && e.cancelable) {
+        // 计算垂直移动距离
+        const currentY = e.touches[0].clientY;
+        const deltaY = currentY - touchStartY;
+        
+        // 只在页面顶部且向下拉动时阻止（iOS下拉刷新场景）
+        const isAtTop = window.scrollY === 0 || window.scrollY < 10;
+        const isPullingDown = deltaY > 0;
+        
+        if (isAtTop && isPullingDown && deltaY > 20) {
+            // 阻止下拉刷新，但允许游戏内滑动
+            e.preventDefault();
+            
+            // 更新触摸起始位置，避免累积距离过大
+            touchStartY = currentY - 10;
+        }
+    }
+}, { passive: false });
+
+// 3. 触摸结束重置
+document.addEventListener('touchend', function() {
+    isTouchInGrid = false;
+}, { passive: true });
+
+// 4. 触摸取消处理
+document.addEventListener('touchcancel', function() {
+    isTouchInGrid = false;
+}, { passive: true });
+
+// ==================== 保留后续代码 ====================
+
+// 防止页面滚动（这行保留）
+document.body.style.overflow = 'hidden';
+
+// 页面可见性变化处理（这行保留，但注意它从第347行开始）
+document.addEventListener('visibilitychange', function() {
+    if (document.hidden) {
+        console.log('💾 页面隐藏，自动保存游戏');
+        if (typeof saveGameState === 'function') {
+            saveGameState();
+            updateFooterStats();
+        }
+    }
+});
+        
+        // 更新底部统计数据
+        function updateFooterStats() {
+            try {
+                const totalGames = localStorage.getItem('2048-total-games') || '0';
+                const totalWins = localStorage.getItem('2048-total-wins') || '0';
+                
+                document.getElementById('total-games-footer').textContent = totalGames;
+                document.getElementById('total-wins-footer').textContent = totalWins;
+            } catch (e) {
+                console.warn('更新统计数据失败:', e);
+            }
+        }
+        
+        // 初始化时更新统计数据
+        updateFooterStats();
+        
+        // 暴露函数给game.js使用
+        window.gamePage = {
+            updateFooterStats: updateFooterStats
+        };
+    </script>
+    
+    <!-- 样式内联（备份，防止CSS加载失败） -->
+    <style>
+        /* 基本游戏样式（防止CSS加载失败） */
+        .game-container {
+            background: #faf8ef;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            gap: 10px;
+            background: #bbada0;
+            padding: 12px;
+            border-radius: 10px;
+            margin: 0 auto 25px;
+            width: min(90vw, 400px);
+            aspect-ratio: 1/1;
+        }
+        
+        .cell {
+            background: rgba(238, 228, 218, 0.35);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: min(6vw, 32px);
+            color: #776e65;
+            position: relative;
+            overflow: hidden;
+            aspect-ratio: 1/1;
+        }
+        
+        /* iOS安全区域适配 */
+        @supports (padding-top: env(safe-area-inset-top)) {
+            .game-container {
+                padding-top: env(safe-area-inset-top);
+                padding-bottom: env(safe-area-inset-bottom);
+                padding-left: env(safe-area-inset-left);
+                padding-right: env(safe-area-inset-right);
+            }
+        }
+    </style>
+</body>
+</html>
